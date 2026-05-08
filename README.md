@@ -1,12 +1,12 @@
 
-# tor-snowflake-standalone-proxy
+# ❄️ tor-snowflake-standalone-proxy ❄️
 
-A PowerShell-based observability and management CLI for the Tor Snowflake standalone proxy.
-
-<img width="250" height="250" alt="image" src="https://github.com/user-attachments/assets/fb60b4fc-300a-4ac4-874d-d7e1014e3043" />
-
+A PowerShell-based observability and management CLI for the Tor Snowflake standalone proxy. 
 
 This project provides a lightweight command-line environment for running and monitoring a standalone Tor Snowflake proxy on Windows using PowerShell.
+
+<img width="922" height="742" alt="image" src="https://github.com/user-attachments/assets/4b1e1b87-f7f7-4c7e-a296-1edfce8b0ddd" />
+
 
 #  Unlike the browser extension version of Snowflake, this setup behaves more like a persistent volunteer relay service:
 
@@ -22,19 +22,26 @@ Exposes operational telemetry and runtime statistics
 
 The result is a more infrastructure-oriented Snowflake deployment with significantly better visibility into how the proxy operates.
 
-## Why Use the Standalone Proxy Instead of the Browser Extension?
+## 🔴 Why Use the Standalone Proxy Instead of the Browser Extension? 🔴
 
 The browser extension version of Snowflake is designed for casual volunteering and simplicity.
 
 This standalone CLI approach is closer to running dedicated volunteer infrastructure.
 
-Benefits of the standalone approach
+## Benefits of the standalone approach
+
 Persistent background operation
+
 No browser dependency
+
 Reduced browser power-saving interference
+
 Better relay availability and stability
+
 Improved telemetry and debugging visibility
+
 Direct access to verbose operational logs
+
 Runtime analytics and monitoring
 
 In practice, the standalone proxy often appears more active because:
@@ -124,6 +131,25 @@ tor-snowflake-standalone-proxy/
 - Tor Snowflake standalone proxy binary
 
 ---
+
+## Educational Purpose
+
+This project was built as a networking, observability, and infrastructure learning exercise focused on:
+
+WebRTC
+
+NAT traversal
+
+Relay infrastructure
+
+Telemetry parsing
+
+PowerShell automation
+
+Distributed networking systems
+
+Runtime observability
+
 
 ## About Snowflake
 
