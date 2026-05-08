@@ -1,0 +1,5 @@
+{
+  "proxyPath": "./binaries/proxy.exe",
+  "logPath": "./logs/snowflake.log",
+  "errorPath": "./logs/error.log"
+}
