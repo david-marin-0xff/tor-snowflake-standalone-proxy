@@ -1,0 +1,4 @@
+{
+  "proxyPath": "./bin/macos/proxy",
+  "logPath": "./logs/snowflake.log"
+}
