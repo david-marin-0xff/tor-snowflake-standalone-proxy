@@ -1,72 +1,115 @@
-
 # ❄️ tor-snowflake-standalone-proxy ❄️
 
-A PowerShell-based observability and management CLI for the Tor Snowflake standalone proxy. 
+❄️ Cross-platform management and observability toolkit for the Tor Snowflake standalone proxy.
 
-This project provides a lightweight command-line environment for running and monitoring a standalone Tor Snowflake proxy on Windows using PowerShell.
+This project provides a lightweight command-line environment for running, monitoring, and managing dedicated Tor Snowflake standalone proxies across Windows, macOS, and Linux.
+
+Unlike the browser extension version of Snowflake, this toolkit is designed around the idea of persistent volunteer infrastructure — providing improved uptime, operational visibility, and a more service-oriented deployment model.
 
 <img width="922" height="742" alt="image" src="https://github.com/user-attachments/assets/4b1e1b87-f7f7-4c7e-a296-1edfce8b0ddd" />
 
+---
 
-#  Unlike the browser extension version of Snowflake, this setup behaves more like a persistent volunteer relay service:
+# 🌐 What Is This Project?
 
-Runs independently from the browser
+`tor-snowflake-standalone-proxy` acts as a lightweight management and observability layer around the official Tor Snowflake standalone proxy.
 
-Avoids browser throttling and sleeping tabs
+The project focuses on:
 
-Stays online continuously
+- Proxy lifecycle management
+- Runtime observability
+- Relay activity monitoring
+- Telemetry visibility
+- Cross-platform operation
+- Dedicated long-running deployments
 
-Provides direct observability into relay activity
+The goal is to make operating a standalone Snowflake proxy feel more like running lightweight volunteer infrastructure rather than simply enabling a browser extension.
 
-Exposes operational telemetry and runtime statistics
+---
 
-The result is a more infrastructure-oriented Snowflake deployment with significantly better visibility into how the proxy operates.
+# 🚨 Why Use the Standalone Proxy Instead of the Browser Extension? 🚨
 
-## 🔴 Why Use the Standalone Proxy Instead of the Browser Extension? 🔴
+The browser extension version of Snowflake is intentionally designed for simplicity and casual participation.
 
-The browser extension version of Snowflake is designed for casual volunteering and simplicity.
+This project targets a different use case:
 
-This standalone CLI approach is closer to running dedicated volunteer infrastructure.
+> Persistent, dedicated Snowflake proxy operation with improved observability and operational control.
 
 ## Benefits of the standalone approach
 
-Persistent background operation
+- Persistent background operation
+- No browser dependency
+- Reduced browser throttling and sleeping
+- Improved relay availability and uptime
+- Better telemetry and debugging visibility
+- Direct access to verbose operational logs
+- Runtime analytics and monitoring
+- More infrastructure-oriented deployment model
 
-No browser dependency
+In practice, standalone proxies often appear more active because they:
 
-Reduced browser power-saving interference
-
-Better relay availability and stability
-
-Improved telemetry and debugging visibility
-
-Direct access to verbose operational logs
-
-Runtime analytics and monitoring
-
-In practice, the standalone proxy often appears more active because:
-
-It remains online longer
-It polls the broker continuously
-It is less likely to be suspended by the browser
-It behaves more like a stable relay endpoint
+- Stay online longer
+- Continuously poll the broker
+- Avoid browser power-saving interruptions
+- Behave more like stable relay endpoints
 
 ---
 
-## Features
+# ✨ Features ✨
 
-- Start / stop Snowflake proxy
+- Cross-platform architecture
+- Windows PowerShell support
+- macOS/Linux shell support
+- Start / stop proxy management
 - Live log monitoring
+- Runtime statistics and telemetry
 - NAT type detection
 - Relay connection analytics
-- Session telemetry
-- Runtime statistics
-- Log exporting
 - WebRTC observability
+- Log exporting
+- Background process management
 
 ---
 
-## Commands
+# 🖥️ Supported Platforms
+
+| Platform | Status |
+|---|---|
+| Windows | Supported |
+| macOS (Apple Silicon) | Supported |
+| Linux | Supported via Unix shell tooling |
+
+---
+
+# 📦 Project Structure
+
+```text
+tor-snowflake-standalone-proxy/
+│
+├── bin/
+│   └── macos/
+│       └── proxy
+│
+├── binaries/
+│   └── proxy.exe
+│
+├── exports/
+├── logs/
+│
+├── config.json
+├── config.macos.json
+│
+├── snowctl.ps1
+├── snowctl.sh
+│
+└── README.md
+```
+
+---
+
+# ⚡ Commands
+
+## Windows (PowerShell)
 
 ### Start proxy
 
@@ -106,54 +149,119 @@ It behaves more like a stable relay endpoint
 
 ---
 
-## Project Structure
+## macOS / Linux
 
-```text
-tor-snowflake-standalone-proxy/
-│
-├── binaries/
-│   └── proxy.exe
-│
-├── exports/
-├── logs/
-│
-├── .gitignore
-├── config.json
-├── snowctl.ps1
-└── README.md
+### Start proxy
+
+```bash
+./snowctl.sh start
+```
+
+### Stop proxy
+
+```bash
+./snowctl.sh stop
+```
+
+### Check status
+
+```bash
+./snowctl.sh status
+```
+
+### Live logs
+
+```bash
+./snowctl.sh logs
+```
+
+### Runtime statistics
+
+```bash
+./snowctl.sh stats
+```
+
+### Export logs
+
+```bash
+./snowctl.sh export
 ```
 
 ---
 
-## Requirements
+# 🛠️ macOS Build Instructions
 
-- Windows PowerShell
-- Tor Snowflake standalone proxy binary
+The macOS version uses the official Tor Snowflake source code.
+
+## Install Go
+
+```bash
+brew install go
+```
+
+## Clone Snowflake Source
+
+```bash
+git clone https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
+```
+
+## Build Proxy
+
+```bash
+cd snowflake/proxy
+go build
+```
+
+## Copy Binary Into Project
+
+```bash
+cp ./proxy ~/Documents/tor-snowflake-standalone-proxy/bin/macos/
+```
 
 ---
 
-## Educational Purpose
+# 📊 Observability & Telemetry
 
-This project was built as a networking, observability, and infrastructure learning exercise focused on:
+This project exposes operational information that is normally hidden behind the browser extension abstraction.
 
-WebRTC
+Examples include:
 
-NAT traversal
+- NAT type detection
+- Relay connection tracking
+- Session activity
+- Runtime memory usage
+- WebRTC connection state visibility
+- Verbose proxy telemetry
+- Relay connection history
 
-Relay infrastructure
+The goal is to provide better insight into how Snowflake behaves operationally in real-world environments.
 
-Telemetry parsing
+---
 
-PowerShell automation
+# 📖 Educational Purpose 📖
 
-Distributed networking systems
+This project was also built as a networking and infrastructure learning exercise focused on:
 
-Runtime observability
+- WebRTC
+- NAT traversal
+- Relay infrastructure
+- Telemetry parsing
+- Process lifecycle management
+- PowerShell automation
+- Unix shell scripting
+- Distributed networking systems
+- Runtime observability
 
+---
 
-## About Snowflake
+# 🌐 About Snowflake
 
-Snowflake is a Tor Project pluggable transport that helps censored users access the open internet through temporary proxy relays.
+Snowflake is a Tor Project pluggable transport that helps censored users access the open internet through temporary volunteer proxy relays.
 
 Official Project:
+
 https://snowflake.torproject.org/
+
+Tor Project:
+
+https://www.torproject.org/
