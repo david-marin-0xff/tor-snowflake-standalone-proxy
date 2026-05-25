@@ -6,7 +6,8 @@ This project provides a lightweight command-line environment for running, monito
 
 Unlike the browser extension version of Snowflake, this toolkit is designed around the idea of persistent volunteer infrastructure — providing improved uptime, operational visibility, and a more service-oriented deployment model.
 
-<img width="922" height="742" alt="image" src="https://github.com/user-attachments/assets/4b1e1b87-f7f7-4c7e-a296-1edfce8b0ddd" />
+<img width="1426" height="897" alt="image" src="https://github.com/user-attachments/assets/d71ee16f-a9b5-456d-9568-1b22ecb2c4df" />
+
 
 ---
 
