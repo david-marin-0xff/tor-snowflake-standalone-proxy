@@ -1,0 +1,22 @@
+@"
+# Snowflake runtime logs
+logs/*.log
+
+# Snowctl exports
+exports/*.txt
+
+# Tauri / frontend dependencies
+gui/node_modules/
+gui/dist/
+
+# Rust / Tauri build artifacts
+gui/src-tauri/target/
+
+# Local environment files
+gui/.env
+gui/.env.*
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+"@ | Set-Content .gitignore

@@ -1,0 +1,497 @@
+:root {
+  font-family:
+    Inter,
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    sans-serif;
+
+  color: #e7e7e7;
+  background: #0b0d10;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 900px;
+  min-height: 100vh;
+
+  background:
+    radial-gradient(
+      circle at 80% 10%,
+      rgba(95, 47, 125, 0.16),
+      transparent 30%
+    ),
+    #0b0d10;
+}
+
+button {
+  font-family: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─────────────────────────────
+   TOP BAR
+───────────────────────────── */
+
+.topbar {
+  height: 76px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 34px;
+
+  border-bottom: 1px solid #20242a;
+  background: rgba(11, 13, 16, 0.92);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-mark {
+  width: 38px;
+  height: 38px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid #3b424b;
+  border-radius: 8px;
+
+  font-size: 20px;
+
+  background: #11151a;
+}
+
+.brand-title {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.brand-subtitle {
+  margin-top: 2px;
+
+  font-size: 10px;
+  color: #7d858e;
+  letter-spacing: 0.15em;
+}
+
+.connection-state {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+
+  color: #777f88;
+}
+
+/* ─────────────────────────────
+   STATUS DOT
+───────────────────────────── */
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+
+  display: inline-block;
+
+  border-radius: 50%;
+
+  background: #555d66;
+}
+
+.running .status-dot {
+  background: #72d572;
+  box-shadow: 0 0 12px rgba(114, 213, 114, 0.65);
+}
+
+.status-dot.large {
+  width: 12px;
+  height: 12px;
+}
+
+/* ─────────────────────────────
+   DASHBOARD
+───────────────────────────── */
+
+.dashboard {
+  width: min(1180px, calc(100% - 68px));
+  margin: 32px auto;
+
+  flex: 1;
+}
+
+/* ─────────────────────────────
+   HERO
+───────────────────────────── */
+
+.hero-card {
+  min-height: 270px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 38px 42px;
+
+  border: 1px solid #252a31;
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(24, 28, 34, 0.98),
+      rgba(14, 17, 21, 0.98)
+    );
+}
+
+.eyebrow {
+  margin-bottom: 9px;
+
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+
+  color: #8b949e;
+}
+
+h1 {
+  margin: 0;
+
+  font-size: 38px;
+  letter-spacing: -0.035em;
+}
+
+.hero-content p {
+  max-width: 520px;
+
+  margin: 12px 0 25px;
+
+  color: #8d959e;
+  font-size: 14px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.primary-btn,
+.secondary-btn,
+.outline-btn,
+.small-btn {
+  border: 1px solid transparent;
+
+  cursor: pointer;
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    transform 0.1s;
+}
+
+.primary-btn {
+  padding: 12px 22px;
+
+  border-radius: 7px;
+
+  background: #e7e7e7;
+  color: #0b0d10;
+}
+
+.primary-btn:hover {
+  background: #ffffff;
+}
+
+.secondary-btn {
+  padding: 12px 22px;
+
+  border-radius: 7px;
+
+  border-color: #343a42;
+
+  background: #161a1f;
+  color: #c9cdd2;
+}
+
+.secondary-btn:hover,
+.outline-btn:hover,
+.small-btn:hover {
+  border-color: #69717a;
+}
+
+.hero-status {
+  min-width: 190px;
+
+  text-align: center;
+}
+
+.status-ring {
+  width: 108px;
+  height: 108px;
+
+  margin: 0 auto 15px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid #30363d;
+  border-radius: 50%;
+
+  background: #101419;
+}
+
+.running .status-ring {
+  border-color: rgba(114, 213, 114, 0.45);
+  box-shadow: 0 0 35px rgba(114, 213, 114, 0.08);
+}
+
+.status-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: #747c85;
+}
+
+.status-value {
+  margin-top: 5px;
+
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+/* ─────────────────────────────
+   STAT CARDS
+───────────────────────────── */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 12px;
+
+  margin-top: 12px;
+}
+
+.stat-card {
+  padding: 20px;
+
+  border: 1px solid #252a31;
+  border-radius: 10px;
+
+  background: #101318;
+}
+
+.stat-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: #727a83;
+}
+
+.stat-value {
+  margin-top: 7px;
+
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* ─────────────────────────────
+   ACTIVITY
+───────────────────────────── */
+
+.activity-grid {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+
+  gap: 12px;
+
+  margin-top: 12px;
+}
+
+.panel {
+  min-height: 210px;
+
+  border: 1px solid #252a31;
+  border-radius: 10px;
+
+  background: #101318;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 18px 20px;
+
+  border-bottom: 1px solid #20252b;
+}
+
+.panel-title {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.panel-subtitle {
+  margin-top: 3px;
+
+  font-size: 10px;
+  color: #68717a;
+}
+
+.metrics {
+  padding: 5px 20px;
+}
+
+.metric {
+  display: flex;
+  justify-content: space-between;
+
+  padding: 15px 0;
+
+  border-bottom: 1px solid #1d2228;
+
+  font-size: 12px;
+  color: #8b939c;
+}
+
+.metric:last-child {
+  border-bottom: 0;
+}
+
+.metric strong {
+  color: #dce0e4;
+}
+
+.small-btn {
+  padding: 7px 10px;
+
+  border-color: #30363d;
+  border-radius: 5px;
+
+  background: #14181d;
+  color: #8d959e;
+}
+
+.activity-log {
+  height: 145px;
+
+  padding: 17px 20px;
+
+  overflow: hidden;
+
+  font-family:
+    "Cascadia Code",
+    Consolas,
+    monospace;
+
+  font-size: 10px;
+  line-height: 1.7;
+
+  color: #737c85;
+}
+
+/* ─────────────────────────────
+   BOTTOM ACTIONS
+───────────────────────────── */
+
+.bottom-actions {
+  display: flex;
+  gap: 10px;
+
+  margin-top: 12px;
+}
+
+.outline-btn {
+  padding: 10px 15px;
+
+  border-color: #2d333a;
+  border-radius: 6px;
+
+  background: transparent;
+  color: #929aa3;
+}
+
+/* ─────────────────────────────
+   FOOTER
+───────────────────────────── */
+
+footer {
+  display: flex;
+  justify-content: space-between;
+
+  padding: 20px 34px;
+
+  border-top: 1px solid #20242a;
+
+  color: #555e67;
+
+  font-family:
+    "Cascadia Code",
+    Consolas,
+    monospace;
+
+  font-size: 9px;
+  letter-spacing: 0.04em;
+}
+.footer-separator {
+  margin: 0 6px;
+  color: #3f464e;
+}
+
+.github-link {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  color: #777f88;
+  text-decoration: none;
+
+  font-family:
+    "Cascadia Code",
+    Consolas,
+    monospace;
+
+  font-size: 9px;
+  letter-spacing: 0.04em;
+
+  transition:
+    color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.github-link:hover {
+  color: #e7e7e7;
+}
+
+.github-icon {
+  width: 15px;
+  height: 15px;
+}
