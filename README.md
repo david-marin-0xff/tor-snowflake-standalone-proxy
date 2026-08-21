@@ -1,3 +1,17 @@
+<div style="border: 2px solid #d73a49; border-radius: 8px; padding: 16px;">
+
+<h2 style="color: #d73a49;">🚧 Project Update — GUI & Release Preparation</h2>
+
+<p><strong>tor-snowflake-standalone-proxy</strong> is currently undergoing final development and release preparation.</p>
+
+<p>I am completing the new <strong>Tauri-based desktop GUI</strong>, polishing the Windows integration, testing the controller and proxy lifecycle, and preparing the first proper binary release alongside the source code.</p>
+
+<p>The current target is to have the project in a clean, shareable state by <strong>Tuesday, August 25, 2026</strong>.</p>
+
+<p>This timeline is also related to the project's potential participation in a <strong>10-day private Vulnerability Disclosure Program (VDP)</strong> taking place September 1–10, 2026. The goal is to have the repository, documentation, GUI, and release artifacts ready for external security researchers to review before the program begins.</p>
+
+</div>
+
 # ❄️ tor-snowflake-standalone-proxy ❄️
 
 ❄️ Cross-platform management and observability toolkit for the Tor Snowflake standalone proxy.
