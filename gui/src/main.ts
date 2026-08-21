@@ -175,8 +175,6 @@ const app = `
   </div>
 `;
 
-import { invoke } from "@tauri-apps/api/core";
-
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = app;
 
 const startButton = document.querySelector<HTMLButtonElement>("#start-btn");
