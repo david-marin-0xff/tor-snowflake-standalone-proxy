@@ -1,14 +1,14 @@
-<div style="border: 2px solid #d73a49; border-radius: 8px; padding: 16px;">
+<div style="color: red;">
 
-<h2 style="color: #d73a49;">🚧 Project Update — GUI & Release Preparation</h2>
+## 🚧 Project Update — GUI & Release Preparation
 
-<p><strong>tor-snowflake-standalone-proxy</strong> is currently undergoing final development and release preparation.</p>
+**tor-snowflake-standalone-proxy** is currently undergoing final development and release preparation.
 
-<p>I am completing the new <strong>Tauri-based desktop GUI</strong>, polishing the Windows integration, testing the controller and proxy lifecycle, and preparing the first proper binary release alongside the source code.</p>
+I am completing the new **Tauri-based desktop GUI**, polishing the Windows integration, testing the controller and proxy lifecycle, and preparing the first proper binary release alongside the source code.
 
-<p>The current target is to have the project in a clean, shareable state by <strong>Tuesday, August 25, 2026</strong>.</p>
+The current target is to have the project in a clean, shareable state by **Tuesday, August 25, 2026**.
 
-<p>This timeline is also related to the project's potential participation in a <strong>10-day private Vulnerability Disclosure Program (VDP)</strong> taking place September 1–10, 2026. The goal is to have the repository, documentation, GUI, and release artifacts ready for external security researchers to review before the program begins.</p>
+This timeline is also related to the project's potential participation in a **10-day private Vulnerability Disclosure Program (VDP)** taking place September 1–10, 2026. The goal is to have the repository, documentation, GUI, and release artifacts ready for external security researchers to review before the program begins.
 
 </div>
 
