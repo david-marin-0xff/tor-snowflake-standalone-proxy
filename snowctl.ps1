@@ -188,7 +188,84 @@ switch ($Action.ToLower()) {
 
         Write-Host ""
     }
+    "json" {
 
+        $running = Get-Process proxy -ErrorAction SilentlyContinue |
+            Select-Object -First 1
+
+        if (-not $running) {
+            @{
+                status = "STOPPED"
+                pid = $null
+                memory = $null
+                uptime = $null
+                nat = $null
+                offers = 0
+                answers = 0
+                relays = 0
+                lastRelay = $null
+                recentActivity = @()
+            } | ConvertTo-Json -Compress
+
+            exit 0
+        }
+
+        $memory = [math]::Round(
+            $running.WorkingSet64 / 1MB,
+            2
+        )
+
+        try {
+            $startTime = $running.StartTime
+            $uptime = ((Get-Date) - $startTime).ToString().Split('.')[0]
+        }
+        catch {
+            $uptime = $null
+        }
+
+        $nat = $null
+        $offers = 0
+        $answers = 0
+        $relays = 0
+        $lastRelay = $null
+        $recentActivity = @()
+
+        if (Test-Path $logPath) {
+
+            $natMatch = Select-String "NAT type:" $logPath |
+                Select-Object -Last 1
+
+            if ($natMatch) {
+                $nat = $natMatch.Line.Split("NAT type:")[1].Trim()
+            }
+
+            $offers = @(Select-String "Received Offer From Broker" $logPath).Count
+            $answers = @(Select-String "Generating answer" $logPath).Count
+            $relays = @(Select-String "Connected to relay" $logPath).Count
+
+            $lastRelayMatch = Select-String "Connected to relay" $logPath |
+                Select-Object -Last 1
+
+            if ($lastRelayMatch) {
+                $lastRelay = $lastRelayMatch.Line.Split("Connected to relay:")[1].Trim()
+            }
+
+            $recentActivity = @(Get-Content $logPath | Select-Object -Last 5)
+        }
+
+        @{
+            status = "RUNNING"
+            pid = $running.Id
+            memory = $memory
+            uptime = $uptime
+            nat = $nat
+            offers = $offers
+            answers = $answers
+            relays = $relays
+            lastRelay = $lastRelay
+            recentActivity = $recentActivity
+        } | ConvertTo-Json -Compress
+    }
     "export" {
 
         if (-not (Test-Path $logPath)) {
