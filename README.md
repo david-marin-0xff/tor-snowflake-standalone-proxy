@@ -10,7 +10,7 @@ The current development workflow is intentionally incremental:
 
 This allows changes to be tested against a real running Snowflake proxy before being incorporated into the public repository.
 
-The current target is to have the project in a clean, shareable state by **Tuesday, August 25, 2026**.
+The current target is to have the project in a clean, shareable state within 1-2 months.
 
 The GUI and release components are still being actively improved, so some functionality, documentation, and packaging details may continue to change during this preparation period.
 
