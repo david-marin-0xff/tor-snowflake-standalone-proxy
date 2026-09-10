@@ -4,11 +4,28 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-# Always resolve paths relative to this script.
-$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
-$configPath = Join-Path $ScriptDir "config.json"
+# ------------------------------------------------------------
+# Resolve paths relative to this script.
+# ------------------------------------------------------------
 
+$ScriptPath = $MyInvocation.MyCommand.Definition
+$ScriptDir = [System.IO.Path]::GetDirectoryName($ScriptPath)
+
+if ([string]::IsNullOrWhiteSpace($ScriptDir)) {
+    Write-Error "Unable to determine the controller directory."
+    exit 1
+}
+
+# Configuration file.
+$configPath = [System.IO.Path]::Combine(
+    $ScriptDir,
+    "config.json"
+)
+
+# ------------------------------------------------------------
 # Load configuration.
+# ------------------------------------------------------------
+
 if (-not (Test-Path $configPath)) {
     Write-Error "Configuration file not found: $configPath"
     exit 1
@@ -16,24 +33,64 @@ if (-not (Test-Path $configPath)) {
 
 $config = Get-Content $configPath -Raw | ConvertFrom-Json
 
-# Resolve configured paths relative to the project directory.
-$proxyPath = Join-Path $ScriptDir $config.proxyPath
-$logPath = Join-Path $ScriptDir $config.logPath
-$logDirectory = Split-Path -Parent $logPath
-$exportsDirectory = Join-Path $ScriptDir "exports"
+# ------------------------------------------------------------
+# Resolve configured paths.
+# ------------------------------------------------------------
 
+$proxyPath = [System.IO.Path]::Combine(
+    $ScriptDir,
+    $config.proxyPath
+)
+
+$logPath = [System.IO.Path]::Combine(
+    $ScriptDir,
+    $config.logPath
+)
+
+$errorPath = [System.IO.Path]::Combine(
+    $ScriptDir,
+    $config.errorPath
+)
+
+$logDirectory = [System.IO.Path]::GetDirectoryName($logPath)
+
+$exportsDirectory = [System.IO.Path]::Combine(
+    $ScriptDir,
+    "exports"
+)
+
+# ------------------------------------------------------------
 # Validate proxy.
+# ------------------------------------------------------------
+
 if (-not (Test-Path $proxyPath)) {
     Write-Error "Snowflake proxy not found: $proxyPath"
     exit 1
 }
 
+# ------------------------------------------------------------
 # Ensure required directories exist.
-if (-not (Test-Path $logDirectory)) {
-    New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
+# ------------------------------------------------------------
+
+if (-not [string]::IsNullOrWhiteSpace($logDirectory)) {
+    if (-not (Test-Path $logDirectory)) {
+        New-Item `
+            -ItemType Directory `
+            -Path $logDirectory `
+            -Force |
+            Out-Null
+    }
 }
 
+# ------------------------------------------------------------
+# Controller commands.
+# ------------------------------------------------------------
+
 switch ($Action.ToLower()) {
+
+    # --------------------------------------------------------
+    # START
+    # --------------------------------------------------------
 
     "start" {
 
@@ -47,6 +104,7 @@ switch ($Action.ToLower()) {
         Write-Host "Starting Snowflake proxy..."
 
         try {
+
             Start-Process `
                 -FilePath $proxyPath `
                 -ArgumentList `
@@ -75,6 +133,10 @@ switch ($Action.ToLower()) {
         }
     }
 
+    # --------------------------------------------------------
+    # STOP
+    # --------------------------------------------------------
+
     "stop" {
 
         $running = Get-Process proxy -ErrorAction SilentlyContinue
@@ -85,33 +147,53 @@ switch ($Action.ToLower()) {
         }
 
         foreach ($process in $running) {
+
             try {
-                Stop-Process -Id $process.Id -Force -ErrorAction Stop
+
+                Stop-Process `
+                    -Id $process.Id `
+                    -Force `
+                    -ErrorAction Stop
+
                 Write-Host "Snowflake proxy stopped. PID: $($process.Id)"
             }
             catch {
-                Write-Error "Failed to stop proxy PID $($process.Id): $($_.Exception.Message)"
+
+                Write-Error `
+                    "Failed to stop proxy PID $($process.Id): $($_.Exception.Message)"
+
                 exit 1
             }
         }
     }
+
+    # --------------------------------------------------------
+    # STATUS
+    # --------------------------------------------------------
 
     "status" {
 
         $running = Get-Process proxy -ErrorAction SilentlyContinue
 
         if ($running) {
+
             Write-Host "Snowflake proxy is RUNNING."
             Write-Host "PID: $($running.Id -join ', ')"
         }
         else {
+
             Write-Host "Snowflake proxy is NOT running."
         }
     }
 
+    # --------------------------------------------------------
+    # LOGS
+    # --------------------------------------------------------
+
     "logs" {
 
         if (-not (Test-Path $logPath)) {
+
             Write-Host "Log file does not exist yet: $logPath"
             exit 0
         }
@@ -119,11 +201,16 @@ switch ($Action.ToLower()) {
         Get-Content $logPath -Wait
     }
 
+    # --------------------------------------------------------
+    # STATS
+    # --------------------------------------------------------
+
     "stats" {
 
         $running = Get-Process proxy -ErrorAction SilentlyContinue
 
         if (-not $running) {
+
             Write-Host "Snowflake proxy is NOT running."
             exit 0
         }
@@ -143,37 +230,68 @@ switch ($Action.ToLower()) {
         Write-Host "Memory Usage:" $memory "MB"
 
         try {
+
             $startTime = ($running | Select-Object -First 1).StartTime
             $uptime = (Get-Date) - $startTime
-            Write-Host "Uptime:" $uptime.ToString().Split('.')[0]
+
+            Write-Host `
+                "Uptime:" `
+                $uptime.ToString().Split('.')[0]
         }
         catch {
+
             Write-Host "Uptime: unavailable"
         }
 
         if (Test-Path $logPath) {
 
-            $nat = Select-String "NAT type:" $logPath |
+            # NAT type.
+            $nat = Select-String `
+                "NAT type:" `
+                $logPath |
                 Select-Object -Last 1
 
             if ($nat) {
+
                 $natLine = $nat.Line.Split("NAT type:")[1].Trim()
+
                 Write-Host "NAT Type:" $natLine
             }
 
-            $offers = @(Select-String "Received Offer From Broker" $logPath).Count
-            $answers = @(Select-String "Generating answer" $logPath).Count
-            $relays = @(Select-String "Connected to relay" $logPath).Count
+            # Snowflake activity counters.
+            $offers = @(
+                Select-String `
+                    "Received Offer From Broker" `
+                    $logPath
+            ).Count
+
+            $answers = @(
+                Select-String `
+                    "Generating answer" `
+                    $logPath
+            ).Count
+
+            $relays = @(
+                Select-String `
+                    "Connected to relay" `
+                    $logPath
+            ).Count
 
             Write-Host "Client Offers:" $offers
             Write-Host "Answers Generated:" $answers
             Write-Host "Relay Connections:" $relays
 
-            $lastRelay = Select-String "Connected to relay" $logPath |
+            # Last relay.
+            $lastRelay = Select-String `
+                "Connected to relay" `
+                $logPath |
                 Select-Object -Last 1
 
             if ($lastRelay) {
-                $relayLine = $lastRelay.Line.Split("Connected to relay:")[1].Trim()
+
+                $relayLine = `
+                    $lastRelay.Line.Split("Connected to relay:")[1].Trim()
+
                 Write-Host ""
                 Write-Host "Last Relay:"
                 Write-Host $relayLine
@@ -183,17 +301,28 @@ switch ($Action.ToLower()) {
             Write-Host "Recent Activity:"
             Write-Host ""
 
-            Get-Content $logPath | Select-Object -Last 5
+            Get-Content $logPath |
+                Select-Object -Last 5
         }
 
         Write-Host ""
     }
+
+    # --------------------------------------------------------
+    # JSON
+    # --------------------------------------------------------
+
     "json" {
 
         $running = Get-Process proxy -ErrorAction SilentlyContinue |
             Select-Object -First 1
 
+        # ----------------------------------------------------
+        # STOPPED
+        # ----------------------------------------------------
+
         if (-not $running) {
+
             @{
                 status = "STOPPED"
                 pid = $null
@@ -205,10 +334,15 @@ switch ($Action.ToLower()) {
                 relays = 0
                 lastRelay = $null
                 recentActivity = @()
-            } | ConvertTo-Json -Compress
+            } |
+            ConvertTo-Json -Compress
 
             exit 0
         }
+
+        # ----------------------------------------------------
+        # RUNNING
+        # ----------------------------------------------------
 
         $memory = [math]::Round(
             $running.WorkingSet64 / 1MB,
@@ -216,10 +350,14 @@ switch ($Action.ToLower()) {
         )
 
         try {
+
             $startTime = $running.StartTime
-            $uptime = ((Get-Date) - $startTime).ToString().Split('.')[0]
+
+            $uptime = `
+                ((Get-Date) - $startTime).ToString().Split('.')[0]
         }
         catch {
+
             $uptime = $null
         }
 
@@ -232,25 +370,59 @@ switch ($Action.ToLower()) {
 
         if (Test-Path $logPath) {
 
-            $natMatch = Select-String "NAT type:" $logPath |
+            # NAT type.
+            $natMatch = Select-String `
+                "NAT type:" `
+                $logPath |
                 Select-Object -Last 1
 
             if ($natMatch) {
-                $nat = $natMatch.Line.Split("NAT type:")[1].Trim()
+
+                $nat = `
+                    $natMatch.Line.Split("NAT type:")[1].Trim()
             }
 
-            $offers = @(Select-String "Received Offer From Broker" $logPath).Count
-            $answers = @(Select-String "Generating answer" $logPath).Count
-            $relays = @(Select-String "Connected to relay" $logPath).Count
+            # Activity counters.
+            $offers = @(
+                Select-String `
+                    "Received Offer From Broker" `
+                    $logPath
+            ).Count
 
-            $lastRelayMatch = Select-String "Connected to relay" $logPath |
+            $answers = @(
+                Select-String `
+                    "Generating answer" `
+                    $logPath
+            ).Count
+
+            $relays = @(
+                Select-String `
+                    "Connected to relay" `
+                    $logPath
+            ).Count
+
+            # Last relay.
+            $lastRelayMatch = Select-String `
+                "Connected to relay" `
+                $logPath |
                 Select-Object -Last 1
 
             if ($lastRelayMatch) {
-                $lastRelay = $lastRelayMatch.Line.Split("Connected to relay:")[1].Trim()
+
+                $lastRelay = `
+                    $lastRelayMatch.Line.Split(
+                        "Connected to relay:"
+                    )[1].Trim()
             }
 
-            $recentActivity = @(Get-Content $logPath | Select-Object -Last 5 | ForEach-Object { [string]$_ })
+            # Always return an array of strings.
+            $recentActivity = @(
+                Get-Content $logPath |
+                    Select-Object -Last 5 |
+                    ForEach-Object {
+                        [string]$_
+                    }
+            )
         }
 
         @{
@@ -264,23 +436,41 @@ switch ($Action.ToLower()) {
             relays = $relays
             lastRelay = $lastRelay
             recentActivity = $recentActivity
-        } | ConvertTo-Json -Compress
+        } |
+        ConvertTo-Json -Compress
     }
+
+    # --------------------------------------------------------
+    # EXPORT
+    # --------------------------------------------------------
+
     "export" {
 
         if (-not (Test-Path $logPath)) {
+
             Write-Error "Log file does not exist: $logPath"
             exit 1
         }
 
         if (-not (Test-Path $exportsDirectory)) {
-            New-Item -ItemType Directory -Path $exportsDirectory -Force | Out-Null
+
+            New-Item `
+                -ItemType Directory `
+                -Path $exportsDirectory `
+                -Force |
+                Out-Null
         }
 
         $timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
-        $exportFile = Join-Path $exportsDirectory "snowflake-log-$timestamp.txt"
 
-        Copy-Item $logPath $exportFile
+        $exportFile = [System.IO.Path]::Combine(
+            $exportsDirectory,
+            "snowflake-log-$timestamp.txt"
+        )
+
+        Copy-Item `
+            $logPath `
+            $exportFile
 
         Write-Host ""
         Write-Host "Logs exported successfully:"
@@ -288,17 +478,24 @@ switch ($Action.ToLower()) {
         Write-Host ""
     }
 
+    # --------------------------------------------------------
+    # UNKNOWN / NO COMMAND
+    # --------------------------------------------------------
+
     default {
 
         Write-Host ""
         Write-Host "snowctl commands:"
         Write-Host ""
+
         Write-Host "  .\snowctl.ps1 start"
         Write-Host "  .\snowctl.ps1 stop"
         Write-Host "  .\snowctl.ps1 status"
         Write-Host "  .\snowctl.ps1 logs"
         Write-Host "  .\snowctl.ps1 stats"
         Write-Host "  .\snowctl.ps1 export"
+        Write-Host "  .\snowctl.ps1 json"
+
         Write-Host ""
     }
 }

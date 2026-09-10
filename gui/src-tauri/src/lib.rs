@@ -1,67 +1,63 @@
 use std::process::Command;
-use tauri::async_runtime::spawn_blocking;
 
-const CONTROLLER: &str = r"C:\Users\David\snowflake\snowctl.ps1";
+#[cfg(windows)]
+use std::os::windows::process::CommandExt;
+
+use tauri::async_runtime::spawn_blocking;
+use tauri::path::BaseDirectory;
+use tauri::Manager;
+
+// Windows flag: CREATE_NO_WINDOW
+// Prevents PowerShell from opening a visible console window.
+#[cfg(windows)]
+const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 #[tauri::command]
-async fn proxy_stats() -> Result<String, String> {
-    spawn_blocking(|| run_controller("json"))
+async fn proxy_stats(app: tauri::AppHandle) -> Result<String, String> {
+    spawn_blocking(move || run_controller(&app, "json"))
         .await
         .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-async fn proxy_start() -> Result<String, String> {
-    spawn_blocking(|| {
-        Command::new("powershell")
-            .args([
-                "-NoProfile",
-                "-ExecutionPolicy",
-                "Bypass",
-                "-File",
-                CONTROLLER,
-                "start",
-            ])
-            .spawn()
-            .map_err(|e| format!("Failed to launch controller: {e}"))?;
-
-        Ok("start command dispatched".to_string())
-    })
-    .await
-    .map_err(|e| e.to_string())?
+async fn proxy_start(app: tauri::AppHandle) -> Result<String, String> {
+    spawn_blocking(move || run_controller_async(&app, "start"))
+        .await
+        .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-async fn proxy_stop() -> Result<String, String> {
-    spawn_blocking(|| {
-        Command::new("powershell")
-            .args([
-                "-NoProfile",
-                "-ExecutionPolicy",
-                "Bypass",
-                "-File",
-                CONTROLLER,
-                "stop",
-            ])
-            .spawn()
-            .map_err(|e| format!("Failed to launch controller: {e}"))?;
-
-        Ok("stop command dispatched".to_string())
-    })
-    .await
-    .map_err(|e| e.to_string())?
+async fn proxy_stop(app: tauri::AppHandle) -> Result<String, String> {
+    spawn_blocking(move || run_controller_async(&app, "stop"))
+        .await
+        .map_err(|e| e.to_string())?
 }
 
-fn run_controller(action: &str) -> Result<String, String> {
-    let output = Command::new("powershell")
-        .args([
-            "-NoProfile",
-            "-ExecutionPolicy",
-            "Bypass",
-            "-File",
-            CONTROLLER,
-            action,
-        ])
+fn controller_path(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String> {
+    app.path()
+        .resolve("snowctl.ps1", BaseDirectory::Resource)
+        .map_err(|e| format!("Failed to locate bundled snowctl.ps1: {e}"))
+}
+
+fn run_controller(app: &tauri::AppHandle, action: &str) -> Result<String, String> {
+    let controller = controller_path(app)?;
+
+    let mut command = Command::new("powershell");
+
+    command.args([
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+    ]);
+
+    command.arg(&controller);
+    command.arg(action);
+
+    #[cfg(windows)]
+    command.creation_flags(CREATE_NO_WINDOW);
+
+    let output = command
         .output()
         .map_err(|e| format!("Failed to execute controller: {e}"))?;
 
@@ -83,6 +79,34 @@ fn run_controller(action: &str) -> Result<String, String> {
     Ok(String::from_utf8_lossy(&output.stdout)
         .trim()
         .to_string())
+}
+
+fn run_controller_async(
+    app: &tauri::AppHandle,
+    action: &str,
+) -> Result<String, String> {
+    let controller = controller_path(app)?;
+
+    let mut command = Command::new("powershell");
+
+    command.args([
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+    ]);
+
+    command.arg(&controller);
+    command.arg(action);
+
+    #[cfg(windows)]
+    command.creation_flags(CREATE_NO_WINDOW);
+
+    command
+        .spawn()
+        .map_err(|e| format!("Failed to launch controller: {e}"))?;
+
+    Ok(format!("{action} command dispatched"))
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
