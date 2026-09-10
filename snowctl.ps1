@@ -250,7 +250,7 @@ switch ($Action.ToLower()) {
                 $lastRelay = $lastRelayMatch.Line.Split("Connected to relay:")[1].Trim()
             }
 
-            $recentActivity = @(Get-Content $logPath | Select-Object -Last 5)
+            $recentActivity = @(Get-Content $logPath | Select-Object -Last 5 | ForEach-Object { [string]$_ })
         }
 
         @{
