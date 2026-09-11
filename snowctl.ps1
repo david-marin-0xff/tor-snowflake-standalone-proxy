@@ -37,19 +37,23 @@ $config = Get-Content $configPath -Raw | ConvertFrom-Json
 # Resolve configured paths.
 # ------------------------------------------------------------
 
+$proxyRelativePath = $config.proxyPath -replace '^[.][\\/]+', ''
+$logRelativePath = $config.logPath -replace '^[.][\\/]+', ''
+$errorRelativePath = $config.errorPath -replace '^[.][\\/]+', ''
+
 $proxyPath = [System.IO.Path]::Combine(
     $ScriptDir,
-    $config.proxyPath
+    $proxyRelativePath
 )
 
 $logPath = [System.IO.Path]::Combine(
     $ScriptDir,
-    $config.logPath
+    $logRelativePath
 )
 
 $errorPath = [System.IO.Path]::Combine(
     $ScriptDir,
-    $config.errorPath
+    $errorRelativePath
 )
 
 $logDirectory = [System.IO.Path]::GetDirectoryName($logPath)

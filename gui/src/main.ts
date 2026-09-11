@@ -247,6 +247,9 @@ const relaysElement =
 const activityElement =
   document.querySelector("#activity");
 
+const logsButton =
+  document.querySelector<HTMLButtonElement>("#logs-btn");
+
 
 /* ---------------------------------------------------------
    STATUS
@@ -571,6 +574,56 @@ refreshButton?.addEventListener(
   }
 );
 
+/* ---------------------------------------------------------
+   VIEW LOGS
+--------------------------------------------------------- */
+
+logsButton?.addEventListener(
+  "click",
+  async () => {
+
+    try {
+
+      logsButton.disabled = true;
+      logsButton.textContent =
+        "LOADING...";
+
+      const logs =
+        await invoke<string>("proxy_logs");
+
+      /*
+       * Display the controller output.
+       *
+       * For now we use a simple browser dialog.
+       * We can replace this with a proper in-app
+       * log viewer later.
+       */
+
+      alert(
+        logs || "No log output available."
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Failed to read Snowflake logs:",
+        error
+      );
+
+      alert(
+        `Failed to read Snowflake logs:\n${error}`
+      );
+
+    } finally {
+
+      logsButton.disabled = false;
+      logsButton.textContent =
+        "VIEW LOGS";
+
+    }
+
+  }
+);
 
 /* ---------------------------------------------------------
    AUTOMATIC REFRESH

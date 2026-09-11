@@ -33,13 +33,24 @@ async fn proxy_stop(app: tauri::AppHandle) -> Result<String, String> {
         .map_err(|e| e.to_string())?
 }
 
+// View the Snowflake log.
+#[tauri::command]
+async fn proxy_logs(app: tauri::AppHandle) -> Result<String, String> {
+    spawn_blocking(move || run_controller(&app, "logs"))
+        .await
+        .map_err(|e| e.to_string())?
+}
+
 fn controller_path(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String> {
     app.path()
         .resolve("snowctl.ps1", BaseDirectory::Resource)
         .map_err(|e| format!("Failed to locate bundled snowctl.ps1: {e}"))
 }
 
-fn run_controller(app: &tauri::AppHandle, action: &str) -> Result<String, String> {
+fn run_controller(
+    app: &tauri::AppHandle,
+    action: &str,
+) -> Result<String, String> {
     let controller = controller_path(app)?;
 
     let mut command = Command::new("powershell");
@@ -116,7 +127,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             proxy_stats,
             proxy_start,
-            proxy_stop
+            proxy_stop,
+            proxy_logs
         ])
         .run(tauri::generate_context!())
         .expect("error while running application");
