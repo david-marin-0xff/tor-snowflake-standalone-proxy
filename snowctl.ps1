@@ -202,7 +202,7 @@ switch ($Action.ToLower()) {
             exit 0
         }
 
-        Get-Content $logPath -Wait
+        Get-Content -LiteralPath $logPath
     }
 
     # --------------------------------------------------------
