@@ -495,3 +495,88 @@ footer {
   width: 15px;
   height: 15px;
 }
+/* ---------------------------------------------------------
+   LOG VIEWER
+--------------------------------------------------------- */
+
+.logs-modal {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 40px;
+
+  background: rgba(0, 0, 0, 0.72);
+
+  z-index: 1000;
+}
+
+.logs-modal.hidden {
+  display: none;
+}
+
+.logs-window {
+  width: min(1100px, 100%);
+  height: min(720px, 85vh);
+
+  display: flex;
+  flex-direction: column;
+
+  border: 1px solid #30363d;
+  border-radius: 10px;
+
+  background: #0d1014;
+
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.55);
+}
+
+.logs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 17px 20px;
+
+  border-bottom: 1px solid #20252b;
+}
+
+.logs-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.logs-subtitle {
+  margin-top: 3px;
+
+  font-size: 10px;
+  color: #68717a;
+}
+
+.logs-content {
+  flex: 1;
+
+  margin: 0;
+  padding: 20px;
+
+  overflow: auto;
+
+  white-space: pre-wrap;
+  word-break: break-word;
+
+  font-family:
+    "Cascadia Code",
+    Consolas,
+    monospace;
+
+  font-size: 11px;
+  line-height: 1.65;
+
+  color: #aeb6bf;
+
+  background: #090b0e;
+}

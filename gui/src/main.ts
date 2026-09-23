@@ -202,7 +202,35 @@ const app = `
 
       </a>
 
-    </footer>
+        </footer>
+
+    <div id="logs-modal" class="logs-modal hidden">
+
+      <div class="logs-window">
+
+        <div class="logs-header">
+
+          <div>
+            <div class="logs-title">
+              SNOWFLAKE LOGS
+            </div>
+
+            <div class="logs-subtitle">
+              Standalone proxy output
+            </div>
+          </div>
+
+          <button id="logs-close-btn" class="small-btn">
+            CLOSE
+          </button>
+
+        </div>
+
+        <pre id="logs-content" class="logs-content">Loading logs...</pre>
+
+      </div>
+
+    </div>
 
   </div>
 `;
@@ -250,7 +278,14 @@ const activityElement =
 const logsButton =
   document.querySelector<HTMLButtonElement>("#logs-btn");
 
+const logsModal =
+  document.querySelector<HTMLDivElement>("#logs-modal");
 
+const logsCloseButton =
+  document.querySelector<HTMLButtonElement>("#logs-close-btn");
+
+const logsContent =
+  document.querySelector<HTMLPreElement>("#logs-content");
 /* ---------------------------------------------------------
    STATUS
 --------------------------------------------------------- */
@@ -582,26 +617,26 @@ logsButton?.addEventListener(
   "click",
   async () => {
 
+    if (!logsModal || !logsContent) {
+      return;
+    }
+
     try {
 
       logsButton.disabled = true;
       logsButton.textContent =
         "LOADING...";
 
+      logsContent.textContent =
+        "Loading logs...";
+
+      logsModal.classList.remove("hidden");
+
       const logs =
         await invoke<string>("proxy_logs");
 
-      /*
-       * Display the controller output.
-       *
-       * For now we use a simple browser dialog.
-       * We can replace this with a proper in-app
-       * log viewer later.
-       */
-
-      alert(
-        logs || "No log output available."
-      );
+      logsContent.textContent =
+        logs || "No log output available.";
 
     } catch (error) {
 
@@ -610,9 +645,8 @@ logsButton?.addEventListener(
         error
       );
 
-      alert(
-        `Failed to read Snowflake logs:\n${error}`
-      );
+      logsContent.textContent =
+        `Failed to read Snowflake logs:\n\n${error}`;
 
     } finally {
 
@@ -621,6 +655,20 @@ logsButton?.addEventListener(
         "VIEW LOGS";
 
     }
+
+  }
+);
+
+
+/* ---------------------------------------------------------
+   CLOSE LOG VIEWER
+--------------------------------------------------------- */
+
+logsCloseButton?.addEventListener(
+  "click",
+  () => {
+
+    logsModal?.classList.add("hidden");
 
   }
 );
